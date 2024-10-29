@@ -5,6 +5,7 @@ class DataHandler:
         # Carregar dados do arquivo e transpor para deixar as amostras em linhas
         self.dados = np.loadtxt(path, delimiter=',').T
         self.setMatrizes()
+        self.returnYasMatrix()
     # Preparar os dados em matrizes X e Y
     def setMatrizes(self):
         # Formato dos dados:
@@ -20,9 +21,10 @@ class DataHandler:
         # matriz de categorias (variável dependente)
         # formar a matriz para ficar 
         self.y = self.matriz[:, self.dados.shape[1]].reshape(-1,1)
+        
     def returnYasMatrix(self):
         # Matriz Y preenchida com -1 e com 5 colunas (para as 5 classes)
         matY = np.ones((self.dados.shape[0], 5)) * -1
         # Ajuste para que os valores de y sejam índices de 0 a 4
         matY[np.arange(self.dados.shape[0]), self.y.flatten().astype(int) - 1] = 1
-        return matY
+        self.matY = matY
