@@ -5,8 +5,11 @@ from classes.dados.monteCarlo import MonteCarlo as mc
 from classes.modelos.MQOtradicional import MQOT 
 
 data = dh(r"notebooks\EMGsDataset.csv")
+data.setMatrizes()
+data.returnYasMatrix()
 x, y = data.x, data.matY
-
+print(x.T)
+print(y.T)
 x_train, y_train, x_test, y_test = mc.partition(x, y)
 
 modelo = MQOT(x_train, y_train)
