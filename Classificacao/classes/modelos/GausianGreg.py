@@ -2,16 +2,18 @@ import numpy as np
 
 from classes.modelos.modeloBase import BaseModelClass
 
-# para cada classe, é preciso criar o vetor de médias das features
-# e a matriz de covariancia
-class GaussianCovModel(BaseModelClass):
+# sempre lmebrar, para gausiana
+# X E R{p x n}
+
+
+class GausianGredModel(BaseModelClass):
     def __init__(self, x: np.ndarray, y: np.ndarray, c: np.ndarray) -> None:
         super().__init__(x, y)
         # lista de classes
         self.c = c
         self.separatedDataBase()
-        
-        # Separar matriz com base nas classes
+
+    # é preciso calcular a ,édia e desvio padrão para cada classe
     def getDataByClass(self, classe: int):
         # Selecionar as colunas de `y` onde a classe corresponde
         indices_classe = np.where(self.y[0, :] == classe)[0]  # Obter os índices para a classe específica
@@ -29,28 +31,47 @@ class GaussianCovModel(BaseModelClass):
                 "y": y_c
             }
 
-    # criar statistias dos dados
-    # como a matrix de covariancia é igaul para todos os grupos de dados
-    # ela é feita somente uma vez
+
+    # para cada classe, calcular 
     def getStatistcs(self):
-        self.cov = np.cov(self.x)
-        self.inv_cov = np.linalg.inv(self.cov)
-        self.mean_by_class = {}
-        for i in self.c:
-            mean = np.mean(self.separeted_matrix[i]["x"], axis=1).reshape(-1,1)
-            self.mean_by_class[i] = mean
+        self.statics = {}
+        for classe in self.c:
+            # media
+            mean = np.mean(self.separeted_matrix[classe]["x"], axis=1).reshape(-1, 1)
+            
+            cov = np.cov(self.separeted_matrix[classe]["x"])
+            # prior_proba
+            prior = (self.separeted_matrix[classe]["x"].shape[1])/self.x.shape[1]
+            self.statics[classe] = {
+                "mean":mean,
+                "cov":cov,
+                "prior":prior
+            }
+
 
 
     def descriminante(self, x_new, classe):
 
         # Calculando o termo 2
-        diff = x_new - self.mean_by_class[classe]
-        termo_2 =  (diff.T @ self.inv_cov @ diff)
+        diff = x_new - self.statics[classe]["mean"]
+        termo_2 = (diff.T @ self.inv_cov @ diff)
 
         return termo_2
 
+    
+    def getCovAgregado(self):
+        var = 0
+        for classe in self.c:
+            cov_c = self.statics[classe]["cov"]
+            n_c = self.separeted_matrix[classe]["x"].shape[1]
+            var += cov_c * n_c
+        return var / self.x.shape[1]
+
     def predict(self, x_new: np.ndarray):
         predictions = []
+
+        self.cov = self.getCovAgregado()
+        self.inv_cov = np.linalg.inv(self.cov)
 
         for individuo in x_new.T:
 
@@ -65,4 +86,3 @@ class GaussianCovModel(BaseModelClass):
             
             predictions.append([predicted_classs, max_score])
         return predictions
-        

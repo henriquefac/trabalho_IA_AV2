@@ -45,15 +45,37 @@ class GausianTraditionalModel(BaseModelClass):
             self.statics[classe] = {
                 "mean":mean,
                 "cov":cov,
+                "invCov": np.linalg.pinv(cov),
+                "detCov":np.linalg.det(cov),
                 "prior":prior
             }
 
-    def descriminante(self, x, mean, cov):
-        diff = x - mean
-        det_cov = np.linalg.det(cov)
-        inv_cov = np.linalg.pinv(cov)
 
-        termo_1 = -0.5 * np.log(det_cov)
-        termo_2 = -0.5 * (diff.T @ inv_cov @ diff)
+
+    def descriminante(self, x_new, classe):
+        termo_1 = -0.5 * np.log(self.statics[classe]["detCov"])
+
+        # Calculando o termo 2
+        diff = x_new - self.statics[classe]["mean"]
+        termo_2 = -0.5 * (diff.T @ self.statics[classe]["invCov"] @ diff)
 
         return termo_1 + termo_2
+
+    
+
+    def predict(self, x_new: np.ndarray):
+        predictions = []
+
+        for individuo in x_new.T:
+
+            max_score = - np.inf
+            predicted_classs = None
+            for classe in self.c:
+                score = self.descriminante(individuo.reshape(-1, 1), classe)
+
+                if score > max_score: 
+                    max_score = score
+                    predicted_classs = classe
+            
+            predictions.append([predicted_classs, max_score])
+        return predictions

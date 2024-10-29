@@ -39,13 +39,13 @@ class DataHandler:
         # Terceira coluna: Categoria (1-Neutro, 2-Sorriso, 3-Sobrancelhas levantadas, 4-Surpreso, 5-Rabugento)
 
         # Concatenar uma coluna de 1's para incluir o termo de viés
-        self.matriz = np.concatenate((np.ones((self.dados.shape[0], 1)), self.dados), axis=1)
+        
         # matrix de variáveis independentes
-        self.x = self.matriz[:, :self.dados.shape[1]]
+        self.x = self.dados[:, :self.dados.shape[1]-1]
         # matriz de categorias (variável dependente)
         # formar a matriz para ficar 
-        self.y = self.matriz[:, self.dados.shape[1]].reshape(-1,1)
+        self.y = self.dados[:, self.dados.shape[1]-1].reshape(-1,1)
 
-        self.matriz = self.matriz.T
+        
         self.x, self.y = self.x.T, self.y.T
 
