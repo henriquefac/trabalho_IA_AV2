@@ -11,5 +11,5 @@ class MQOT(BaseModelClass):
 
     def predict(self, x_new: np.ndarray):
         predicoes =  x_new @ self.matrix_w
-
+        print(predicoes)
         return np.argmax(predicoes, axis=1) + 1

@@ -48,8 +48,8 @@ class GausianFriedman(BaseModelClass):
             self.statics[classe] = {
                 "mean":mean,
                 "cov":cov,
-                "invCov": np.linalg.pinv(cov),
-                "detCov":np.linalg.det(cov),
+                "invCov": None,
+                "detCov":None,
                 "prior":prior
             }
         self.setCov()
@@ -57,17 +57,28 @@ class GausianFriedman(BaseModelClass):
     def getCovAgregado(self):
         var = 0
         for classe in self.c:
+            # matrix de covariância da classe
             cov_c = self.statics[classe]["cov"]
+            # numero de amostras da clase
             n_c = self.separeted_matrix[classe]["x"].shape[1]
+            # matriz de covariância vezes número de amostras da classe 
+            # acumulada para cada classe
             var += cov_c * n_c
+        # média ponderada das matrizes de covariância
         return var / self.x.shape[1]
 
     def setCov(self):
+        # gerar matriz de covariância agregada
         gre_cov = self.getCovAgregado()
         for classe in self.c:
+            # número de amostras
             N = self.x.shape[1]
+            # número de amostras da classe
             n = self.separeted_matrix[classe]["x"].shape[1]
+            # matriz de covariância (tradicional)
             cov = self.statics[classe]["cov"]
+            # formula para calcular nova matrix de covariância regularizada
+            # por lambda
             new_cov = ((1- self.lamb)*(n * cov) + (self.lamb * N * gre_cov))/((1-self.lamb)*n + self.lamb*N)
             self.statics[classe]["cov"] = new_cov
             self.statics[classe]["invCov"] = np.linalg.inv(new_cov)
@@ -82,21 +93,14 @@ class GausianFriedman(BaseModelClass):
 
         return termo_1 + termo_2
 
-    
-    def descriminante2(self, x_new, classe):
-        # Calculando o termo 2
-        diff = x_new - self.statics[classe]["mean"]
-        termo_2 = (diff.T @ self.statics[classe]["invCov"] @ diff)
 
-        return termo_2
 
 
     def predict(self, x_new: np.ndarray):
         predictions = []
 
         desciminante = self.descriminante
-        if self.lamb == 1:
-            desciminante = self.descriminante2
+
         for individuo in x_new.T:
 
             max_score = - np.inf
@@ -108,5 +112,5 @@ class GausianFriedman(BaseModelClass):
                     max_score = score
                     predicted_classs = classe
             
-            predictions.append([predicted_classs, max_score])
+            predictions.append(predicted_classs)
         return predictions

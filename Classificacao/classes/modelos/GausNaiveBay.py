@@ -6,7 +6,7 @@ from classes.modelos.modeloBase import BaseModelClass
 # X E R{p x n}
 
 
-class GausianTraditionalModel(BaseModelClass):
+class GausNaiveBay(BaseModelClass):
     def __init__(self, x: np.ndarray, y: np.ndarray, c: np.ndarray) -> None:
         super().__init__(x, y)
         # lista de classes
@@ -32,36 +32,45 @@ class GausianTraditionalModel(BaseModelClass):
             }
 
 
-    # para cada classe, calcular 
     def getStatistcs(self):
         self.statics = {}
         for classe in self.c:
-            # media
             mean = np.mean(self.separeted_matrix[classe]["x"], axis=1).reshape(-1, 1)
-            
-            cov = np.cov(self.separeted_matrix[classe]["x"])
-            # para evitar problemas com determiante, adicionamos um valor mínimo
-            cov = cov + 1e-10
-            # prior_proba
-            prior = (self.separeted_matrix[classe]["x"].shape[1])/self.x.shape[1]
+            epsilon = 1e-10
+            var = np.var(self.separeted_matrix[classe]["x"], axis=1).reshape(-1, 1) + epsilon
+            prior = self.separeted_matrix[classe]["x"].shape[1] / self.x.shape[1]
             self.statics[classe] = {
-                "mean":mean,
-                "cov":cov,
-                "invCov": np.linalg.pinv(cov),
-                "detCov":np.linalg.det(cov),
-                "prior":prior
+                "mean": mean,
+                "var": var,
+                "prior": prior
             }
 
 
 
-    def descriminante(self, x_new, classe):
-        termo_1 = -0.5 * np.log(self.statics[classe]["detCov"])
+    def discriminante(self, x_new, classe):
+        stat = self.statics[classe]
+        mean = stat["mean"]
+        var = stat["var"]
+        prior = stat["prior"]
 
-        # Calculando o termo 2
-        diff = x_new - self.statics[classe]["mean"]
-        termo_2 = -0.5 * (diff.T @ self.statics[classe]["invCov"] @ diff)
+        # Cálculo da probabilidade de ser da classe dada a nova amostra
+        # Usando a fórmula da função de densidade da distribuição normal
+        n = x_new.shape[0]
+        probabilidade = prior  # Começa com a probabilidade a priori
 
-        return termo_1 + termo_2
+        for i in range(n):
+            try:
+                # Aplicando a função de densidade de probabilidade da normal
+                termo1 = 1 / np.sqrt(2 * np.pi * var[i])
+                termo2 = np.exp(-((x_new[i] - mean[i]) ** 2) / (2 * var[i]))
+                probabilidade *= termo1 * termo2
+            except:
+                print(classe)
+                # Aplicando a função de densidade de probabilidade da normal
+                termo1 = 1 / np.sqrt(2 * np.pi * var[i])
+                termo2 = np.exp(-((x_new[i] - mean[i]) ** 2) / (2 * var[i]))
+                probabilidade *= termo1 * termo2
+        return probabilidade
 
     
 
@@ -73,8 +82,7 @@ class GausianTraditionalModel(BaseModelClass):
             max_score = - np.inf
             predicted_classs = None
             for classe in self.c:
-                score = self.descriminante(individuo.reshape(-1, 1), classe)
-
+                score = self.discriminante(individuo.reshape(-1, 1), classe)
                 if score > max_score: 
                     max_score = score
                     predicted_classs = classe

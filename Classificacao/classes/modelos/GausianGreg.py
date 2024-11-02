@@ -74,15 +74,16 @@ class GausianGredModel(BaseModelClass):
         self.inv_cov = np.linalg.inv(self.cov)
 
         for individuo in x_new.T:
-
-            max_score = - np.inf
+            # buscamos o menor valor vizando
+            # minimizar as distâncias de Mahalanobis (LDA)
+            min_score = np.inf
             predicted_classs = None
             for classe in self.c:
                 score = self.descriminante(individuo.reshape(-1, 1), classe)
 
-                if score > max_score: 
-                    max_score = score
+                if score < min_score: 
+                    min_score = score
                     predicted_classs = classe
             
-            predictions.append([predicted_classs, max_score])
+            predictions.append(predicted_classs)
         return predictions
