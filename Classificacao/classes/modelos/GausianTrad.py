@@ -27,7 +27,7 @@ class GausianTraditionalModel(BaseModelClass):
         for classe in self.c:
             x_data = self.separeted_matrix[classe]["x"]
             mean = np.mean(x_data, axis=1, keepdims=True)
-            cov = np.cov(x_data) + 1e-14 * np.eye(x_data.shape[0])
+            cov = np.cov(x_data) + 1e-3 * np.eye(x_data.shape[0])
             inv_cov = np.linalg.pinv(cov)
             det_cov = np.linalg.det(cov)
             prior = x_data.shape[1] / self.x.shape[1]

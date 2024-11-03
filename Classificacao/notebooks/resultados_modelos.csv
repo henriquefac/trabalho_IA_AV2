@@ -1,9 +1,9 @@
-Modelos,Média,Desvio Padrão,Maior valor,Menor Valor
-MQO tradicional,0.7240832,0.006738343844002027,0.7431,0.7056
-Classificador Gaussiano Tradicional,0.8000884000000001,0.003624580726097846,0.8102,0.7897
-Classificador Gaussiano (Cov. de todo cj. treino),0.9482068,0.001977501898861285,0.9533,0.9421
-Classificador Gaussiano (Cov. Agregada),0.9624208,0.0018541972279129285,0.968,0.9565
-Classificador de Bayes Ingenuo (Naive Bayes Classifier),0.9471188,0.0020066605492708536,0.9523,0.9408
-Classificador Gaussiano Regularizado (Friedman λ = 0.25),0.9746931999999999,0.0014601074481009916,0.9801,0.9701
-Classificador Gaussiano Regularizado (Friedman λ = 0.5),0.9678173999999999,0.0016643068346912477,0.9738,0.9627
-Classificador Gaussiano Regularizado (Friedman λ = 0.75),0.9647266,0.0017627910936920445,0.9699,0.9595
+Modelos,Média,Desvio Padrão,Maior Valor,Menor Valor
+MQO tradicional,0.7239918,0.006839110524037465,0.7453,0.7062
+Classificador Gaussiano Tradicional,0.9887226,0.000991801008267279,0.9917,0.9856
+Classificador Gaussiano (Cov. de todo cj. treino),0.9483796,0.001957259267445168,0.9538,0.9431
+Classificador Gaussiano (Cov. Agregada),0.9626236,0.0017134885584677785,0.9677,0.9576
+Classificador de Bayes Ingenuo (Naive Bayes Classifier),0.9472760000000001,0.002033052876833262,0.9533,0.9418
+Classificador Gaussiano Regularizado (Friedman λ = 0.25),0.9748705999999999,0.0013637872414713364,0.9788,0.969
+Classificador Gaussiano Regularizado (Friedman λ = 0.5),0.9680374,0.0015955504504715614,0.9728,0.963
+Classificador Gaussiano Regularizado (Friedman λ = 0.75),0.9649182000000001,0.0016591228887577925,0.9697,0.9599
