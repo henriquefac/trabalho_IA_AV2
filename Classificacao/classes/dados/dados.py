@@ -28,7 +28,12 @@ class DataHandler:
         matY[np.arange(self.dados.shape[0]), self.y.flatten().astype(int) - 1] = 1
         self.matY = matY
 
-
+    @staticmethod
+    def yAsMatrix(y_colum: np.ndarray):
+        # Matriz Y preenchida com -1 e com 5 colunas (para as 5 classes)
+        matY = np.ones((y_colum.shape[0], 5)) * -1
+        matY[np.arange(y_colum.shape[0]), y_colum.flatten().astype(int) -1] = 1
+        return matY
     # para os modelos gausianos bayesianos
     # X ∈ R p×N; Y ∈ R C×N;
 
@@ -38,7 +43,6 @@ class DataHandler:
         # Segunda coluna: Zigomático Maior.
         # Terceira coluna: Categoria (1-Neutro, 2-Sorriso, 3-Sobrancelhas levantadas, 4-Surpreso, 5-Rabugento)
 
-        # Concatenar uma coluna de 1's para incluir o termo de viés
         
         # matrix de variáveis independentes
         self.x = self.dados[:, :self.dados.shape[1]-1]
